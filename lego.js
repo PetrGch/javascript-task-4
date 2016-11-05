@@ -80,7 +80,7 @@ exports.filterIn = function (property, values) {
             if (friendsItem.hasOwnProperty(property) &&
                 values.indexOf(friendsItem[property]) !== -1) {
 
-                return true;
+                return item;
             }
 
 
