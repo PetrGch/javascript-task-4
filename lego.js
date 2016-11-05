@@ -28,7 +28,13 @@ exports.query = function (collection) {
                         return item[1](acc, friendsCollection, selectArg);
                     }, friendsCollection);
 
-    return newListOfFriends;
+    return newListOfFriends.filter(function (item) {
+        if (item) {
+            return true;
+        }
+
+        return false;
+    });
 };
 
 /*
@@ -38,7 +44,7 @@ exports.query = function (collection) {
 exports.select = function () {
     var arrayOfArguments = Array.prototype.slice.call(arguments);
     var arr = [];
-    var func = function (acc, friendsCollection, arg) {
+    var selected = function (acc, friendsCollection, arg) {
         acc.forEach(function (item, index) {
             for (var i = 0; i < arg.length; i++) {
                 var propsName = arg[i];
@@ -58,7 +64,7 @@ exports.select = function () {
         return arr;
     };
 
-    return [3, func, arrayOfArguments];
+    return [3, selected, arrayOfArguments];
 };
 
 /*
@@ -68,14 +74,15 @@ exports.select = function () {
  */
 exports.filterIn = function (property, values) {
 
-    var func = function (acc, friendsCollection) {
+    var filtered = function (acc, friendsCollection) {
         acc = acc.map(function (item, index) {
             var friendsItem = friendsCollection[index];
             if (friendsItem.hasOwnProperty(property) &&
                 values.indexOf(friendsItem[property]) !== -1) {
 
-                return item;
+                return true;
             }
+
 
             return false;
         });
@@ -83,7 +90,7 @@ exports.filterIn = function (property, values) {
         return acc;
     };
 
-    return [2, func];
+    return [2, filtered];
 };
 
 /*
@@ -93,21 +100,21 @@ exports.filterIn = function (property, values) {
  */
 exports.sortBy = function (property, order) {
 
-    var func = function (acc) {
+    var sorted = function (acc) {
         acc.sort(function (a, b) {
             var first = a[property];
             var second = b[property];
             if (order === 'asc') {
-                return first - second;
+                return (first > second) ? 1 : -1;
             }
 
-            return second - first;
+            return (first < second) ? 1 : -1;
         });
 
         return acc;
     };
 
-    return [1, func];
+    return [1, sorted];
 };
 
 /*
@@ -116,9 +123,9 @@ exports.sortBy = function (property, order) {
  * @param {Function} formatter – Функция для форматирования
  */
 exports.format = function (property, formatter) {
-    var func = function (acc) {
+    var formated = function (acc) {
         acc = acc.filter(function (item) {
-            if (item) {
+            if (item && item.hasOwnProperty(property)) {
                 item[property] = formatter(item[property]);
 
                 return true;
@@ -130,7 +137,7 @@ exports.format = function (property, formatter) {
         return acc;
     };
 
-    return [4, func];
+    return [4, formated];
 };
 
 /*
@@ -139,11 +146,11 @@ exports.format = function (property, formatter) {
  */
 exports.limit = function (count) {
 
-    var func = function (acc) {
+    var limited = function (acc) {
         return acc.slice(0, count);
     };
 
-    return [5, func];
+    return [5, limited];
 };
 
 if (exports.isStar) {
