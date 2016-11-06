@@ -41,10 +41,7 @@ exports.select = function () {
     var selected = function (acc) {
         acc.map(function (item, index) {
             var obj = {};
-            if (acc[index] === false) {
 
-                return false;
-            }
             for (var i = 0; i < arrayOfArguments.length; i++) {
                 var propsName = arrayOfArguments[i];
                 var property = item[arrayOfArguments[i]];
@@ -71,12 +68,12 @@ exports.select = function () {
 exports.filterIn = function (property, values) {
 
     var filtered = function (acc, friendsCollection) {
-        acc = acc.map(function (item, index) {
+        acc = acc.filter(function (item, index) {
             var friendsItem = friendsCollection[index];
             if ((values.length === 0 && friendsItem.hasOwnProperty(property)) ||
                 values.indexOf(friendsItem[property]) !== -1) {
 
-                return item;
+                return true;
             }
 
 
