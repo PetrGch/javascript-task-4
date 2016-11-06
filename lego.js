@@ -36,7 +36,6 @@ exports.select = function () {
     var selected = function (acc) {
         acc = acc.map(function (item) {
             var obj = {};
-
             for (var i = 0; i < arrayOfArguments.length; i++) {
                 var propsName = arrayOfArguments[i];
                 var property = item[arrayOfArguments[i]];
@@ -87,8 +86,8 @@ exports.sortBy = function (property, order) {
 
     var sorted = function (acc) {
         acc.sort(function (a, b) {
-            var first = a[property];
-            var second = b[property];
+            var first = a[property] || b[property];
+            var second = b[property] || a[property];
             if (order === 'asc') {
                 return (first > second) ? 1 : -1;
             }
@@ -109,14 +108,14 @@ exports.sortBy = function (property, order) {
  */
 exports.format = function (property, formatter) {
     var formated = function (acc) {
-        acc = acc.filter(function (item) {
+        acc.map(function (item) {
             if (item && item.hasOwnProperty(property)) {
                 item[property] = formatter(item[property]);
 
-                return true;
+                return item;
             }
 
-            return false;
+            return item;
         });
 
         return acc;
