@@ -73,7 +73,7 @@ exports.filterIn = function (property, values) {
     var filtered = function (acc, friendsCollection) {
         acc = acc.map(function (item, index) {
             var friendsItem = friendsCollection[index];
-            if (friendsItem.hasOwnProperty(property) &&
+            if ((values.length === 0 && friendsItem.hasOwnProperty(property)) ||
                 values.indexOf(friendsItem[property]) !== -1) {
 
                 return item;
