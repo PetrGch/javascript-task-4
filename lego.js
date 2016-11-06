@@ -86,8 +86,8 @@ exports.sortBy = function (property, order) {
 
     var sorted = function (acc) {
         acc.sort(function (a, b) {
-            var first = a[property] || b[property];
-            var second = b[property] || a[property];
+            var second = b[property] || 0;
+            var first = a[property] || 0;
             if (order === 'asc') {
                 return (first > second) ? 1 : -1;
             }
