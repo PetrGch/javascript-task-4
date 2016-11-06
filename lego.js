@@ -12,6 +12,7 @@ exports.isStar = false;
  * @params {...Function} – Функции для запроса
  * @returns {Array}
  */
+
 exports.query = function (collection) {
     var friendsCollection = collection.slice();
     var arrayOfArguments = Array.prototype.slice.call(arguments, 1);
