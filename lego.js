@@ -18,14 +18,9 @@ exports.query = function (collection) {
     function compare(a, b) {
         return a[0] - b[0];
     }
-    var selectArg = [];
     var newListOfFriends = arrayOfArguments.sort(compare)
                     .reduce(function (acc, item) {
-                        if (item[2]) {
-                            selectArg = selectArg.concat(item[2]);
-                        }
-
-                        return item[1](acc, friendsCollection, selectArg);
+                        return item[1](acc, friendsCollection);
                     }, friendsCollection);
 
     return newListOfFriends.filter(function (item) {
@@ -43,25 +38,26 @@ exports.query = function (collection) {
  */
 exports.select = function () {
     var arrayOfArguments = Array.prototype.slice.call(arguments);
-    var arr = [];
-    var selected = function (acc, friendsCollection, arg) {
-        acc.forEach(function (item, index) {
-            for (var i = 0; i < arg.length; i++) {
-                var propsName = arg[i];
-                var property = friendsCollection[index][arg[i]];
-                if (arr[index] === undefined) {
-                    arr[index] = {};
-                }
-                if (acc[index] === false) {
-                    arr[index] = false;
-                }
-                if (property && acc[index]) {
-                    arr[index][propsName] = property;
+    var selected = function (acc) {
+        acc.map(function (item, index) {
+            var obj = {};
+            if (acc[index] === false) {
+
+                return false;
+            }
+            for (var i = 0; i < arrayOfArguments.length; i++) {
+                var propsName = arrayOfArguments[i];
+                var property = item[arrayOfArguments[i]];
+                if (property) {
+                    obj[propsName] = property;
                 }
             }
+            acc[index] = obj
+
+            return acc[index];
         });
 
-        return arr;
+        return acc;
     };
 
     return [3, selected, arrayOfArguments];
@@ -128,6 +124,9 @@ exports.format = function (property, formatter) {
             if (item && item.hasOwnProperty(property)) {
                 item[property] = formatter(item[property]);
 
+                return true;
+            }
+            if (typeof item === 'object') {
                 return true;
             }
 
