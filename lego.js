@@ -52,7 +52,7 @@ exports.select = function () {
                     obj[propsName] = property;
                 }
             }
-            acc[index] = obj
+            acc[index] = obj;
 
             return acc[index];
         });
