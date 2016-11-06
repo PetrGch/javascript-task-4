@@ -40,7 +40,7 @@ exports.query = function (collection) {
 exports.select = function () {
     var arrayOfArguments = Array.prototype.slice.call(arguments);
     var selected = function (acc) {
-        acc.map(function (item, index) {
+        acc = acc.map(function (item) {
             var obj = {};
 
             for (var i = 0; i < arrayOfArguments.length; i++) {
@@ -50,9 +50,8 @@ exports.select = function () {
                     obj[propsName] = property;
                 }
             }
-            acc[index] = obj;
 
-            return acc[index];
+            return obj;
         });
 
         return acc;
@@ -68,15 +67,13 @@ exports.select = function () {
  */
 exports.filterIn = function (property, values) {
 
-    var filtered = function (acc, friendsCollection) {
-        acc = acc.filter(function (item, index) {
-            var friendsItem = friendsCollection[index];
-            if ((values.length === 0 && friendsItem.hasOwnProperty(property)) ||
-                values.indexOf(friendsItem[property]) !== -1) {
+    var filtered = function (acc) {
+        acc = acc.filter(function (item) {
+            if ((values.length === 0 && item.hasOwnProperty(property)) ||
+                values.indexOf(item[property]) !== -1) {
 
                 return true;
             }
-
 
             return false;
         });
@@ -122,9 +119,6 @@ exports.format = function (property, formatter) {
             if (item && item.hasOwnProperty(property)) {
                 item[property] = formatter(item[property]);
 
-                return true;
-            }
-            if (typeof item === 'object') {
                 return true;
             }
 
