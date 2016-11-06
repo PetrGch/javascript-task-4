@@ -24,13 +24,7 @@ exports.query = function (collection) {
                         return item[1](acc, friendsCollection);
                     }, friendsCollection);
 
-    return newListOfFriends.filter(function (item) {
-        if (item) {
-            return true;
-        }
-
-        return false;
-    });
+    return newListOfFriends;
 };
 
 /*
