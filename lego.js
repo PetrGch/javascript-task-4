@@ -38,8 +38,8 @@ exports.select = function () {
             var obj = {};
             for (var i = 0; i < arrayOfArguments.length; i++) {
                 var propsName = arrayOfArguments[i];
-                var property = item[arrayOfArguments[i]];
-                if (property) {
+                var property = item[propsName];
+                if (item.hasOwnProperty(propsName)) {
                     obj[propsName] = property;
                 }
             }
@@ -61,17 +61,13 @@ exports.select = function () {
 exports.filterIn = function (property, values) {
 
     var filtered = function (acc) {
-        acc = acc.filter(function (item) {
-            if ((values.length === 0 && item.hasOwnProperty(property)) ||
-                values.indexOf(item[property]) !== -1) {
-
+        return acc.filter(function (item) {
+            if (values.indexOf(item[property]) !== -1) {
                 return true;
             }
 
             return false;
         });
-
-        return acc;
     };
 
     return [1, filtered];
@@ -87,6 +83,9 @@ exports.sortBy = function (property, order) {
         acc.sort(function (a, b) {
             var second = b[property];
             var first = a[property];
+            if (first === second) {
+                return 0;
+            }
             if (order === 'asc') {
                 return (first > second);
             }
@@ -107,17 +106,11 @@ exports.sortBy = function (property, order) {
  */
 exports.format = function (property, formatter) {
     var formated = function (acc) {
-        acc.map(function (item) {
-            if (item && item.hasOwnProperty(property)) {
-                item[property] = formatter(item[property]);
-
-                return item;
-            }
+        return acc.map(function (item) {
+            item[property] = formatter(item[property]);
 
             return item;
         });
-
-        return acc;
     };
 
     return [4, formated];
