@@ -63,7 +63,7 @@ exports.filterIn = function (property, values) {
         });
     };
 
-    return [1, filtered];
+    return [2, filtered];
 };
 
 /*
@@ -81,11 +81,10 @@ exports.sortBy = function (property, order) {
             }
 
             return (first > second) ? -1 : 1;
-            //return (first > second ? 1 : -1) * (order === 'asc' ? 1 : -1);
         });
     };
 
-    return [2, sorted];
+    return [1, sorted];
 };
 
 /*
