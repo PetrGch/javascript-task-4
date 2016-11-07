@@ -100,7 +100,11 @@ exports.sortBy = function (property, order) {
  */
 exports.format = function (property, formatter) {
     var formated = function (acc) {
-        return console.info(acc, formatter);
+        return acc.map(function (item) {
+            item[property] = formatter(item[property]);
+
+            return item;
+        });
     };
 
     return [5, formated];
