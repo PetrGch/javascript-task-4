@@ -74,7 +74,7 @@ exports.filterIn = function (property, values) {
         return acc;
     };
 
-    return [2, filtered];
+    return [1, filtered];
 };
 
 /*
@@ -83,22 +83,21 @@ exports.filterIn = function (property, values) {
  * @param {String} order – Порядок сортировки (asc - по возрастанию; desc – по убыванию)
  */
 exports.sortBy = function (property, order) {
-
     var sorted = function (acc) {
         acc.sort(function (a, b) {
-            var second = b[property] || 0;
-            var first = a[property] || 0;
+            var second = b[property];
+            var first = a[property];
             if (order === 'asc') {
-                return (first > second) ? 1 : -1;
+                return (first > second);
             }
 
-            return (first < second) ? 1 : -1;
+            return (first < second);
         });
 
         return acc;
     };
 
-    return [1, sorted];
+    return [2, sorted];
 };
 
 /*
