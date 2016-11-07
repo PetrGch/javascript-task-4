@@ -14,17 +14,16 @@ exports.isStar = false;
  */
 
 exports.query = function (collection) {
+    var arrayOfArguments = [].slice.call(arguments, 1);
     var friendsCollection = collection.slice();
-    var arrayOfArguments = Array.prototype.slice.call(arguments, 1);
     function compare(a, b) {
         return a[0] - b[0];
     }
-    var newListOfFriends = arrayOfArguments.sort(compare)
-                    .reduce(function (acc, item) {
-                        return item[1](acc, friendsCollection);
-                    }, friendsCollection);
 
-    return newListOfFriends;
+    return arrayOfArguments.sort(compare)
+                    .reduce(function (acc, item) {
+                        return item[1](acc);
+                    }, friendsCollection);
 };
 
 /*
@@ -32,7 +31,7 @@ exports.query = function (collection) {
  * @params {...String}
  */
 exports.select = function () {
-    var arrayOfArguments = Array.prototype.slice.call(arguments);
+    var arrayOfArguments = [].slice.call(arguments);
     var selected = function (acc) {
         acc = acc.map(function (item) {
             var obj = {};
@@ -50,7 +49,7 @@ exports.select = function () {
         return acc;
     };
 
-    return [3, selected, arrayOfArguments];
+    return [3, selected];
 };
 
 /*
@@ -81,11 +80,8 @@ exports.filterIn = function (property, values) {
 exports.sortBy = function (property, order) {
     var sorted = function (acc) {
         acc.sort(function (a, b) {
-            var second = b[property];
             var first = a[property];
-            if (first === second) {
-                return 0;
-            }
+            var second = b[property];
             if (order === 'asc') {
                 return (first > second);
             }
@@ -113,7 +109,7 @@ exports.format = function (property, formatter) {
         });
     };
 
-    return [4, formated];
+    return [5, formated];
 };
 
 /*
@@ -126,7 +122,7 @@ exports.limit = function (count) {
         return acc.slice(0, count);
     };
 
-    return [5, limited];
+    return [4, limited];
 };
 
 if (exports.isStar) {
