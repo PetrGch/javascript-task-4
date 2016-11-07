@@ -77,10 +77,11 @@ exports.sortBy = function (property, order) {
             var first = a[property];
             var second = b[property];
             if (order === 'asc') {
-                return first > second;
+                return (first > second) ? 1 : -1;
             }
 
-            return first < second;
+            return (first > second) ? -1 : 1;
+            //return (first > second ? 1 : -1) * (order === 'asc' ? 1 : -1);
         });
     };
 
