@@ -33,17 +33,16 @@ exports.query = function (collection) {
 exports.select = function () {
     var arrayOfArguments = [].slice.call(arguments);
     var selected = function (acc) {
-        return acc.map(function (item) {
-            var obj = {};
-            for (var i = 0; i < arrayOfArguments.length; i++) {
-                var propsName = arrayOfArguments[i];
-                var property = item[propsName];
-                if (item.hasOwnProperty(propsName)) {
-                    obj[propsName] = property;
+        return acc.map(function (friendItem) {
+            var objectOfFriend = {};
+            arrayOfArguments.forEach(function (propsName) {
+                var property = friendItem[propsName];
+                if (friendItem.hasOwnProperty(propsName)) {
+                    objectOfFriend[propsName] = property;
                 }
-            }
+            });
 
-            return obj;
+            return objectOfFriend;
         });
     };
 
@@ -59,11 +58,8 @@ exports.filterIn = function (property, values) {
 
     var filtered = function (acc) {
         return acc.filter(function (item) {
-            if (values.indexOf(item[property]) !== -1) {
-                return true;
-            }
 
-            return false;
+            return values.indexOf(item[property]) !== -1;
         });
     };
 
@@ -77,17 +73,15 @@ exports.filterIn = function (property, values) {
  */
 exports.sortBy = function (property, order) {
     var sorted = function (acc) {
-        acc.sort(function (a, b) {
+        return acc.sort(function (a, b) {
             var first = a[property];
             var second = b[property];
             if (order === 'asc') {
-                return (first > second);
+                return first > second;
             }
 
-            return (first < second);
+            return first < second;
         });
-
-        return acc;
     };
 
     return [2, sorted];
