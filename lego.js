@@ -33,7 +33,7 @@ exports.query = function (collection) {
 exports.select = function () {
     var arrayOfArguments = [].slice.call(arguments);
     var selected = function (acc) {
-        acc = acc.map(function (item) {
+        return acc.map(function (item) {
             var obj = {};
             for (var i = 0; i < arrayOfArguments.length; i++) {
                 var propsName = arrayOfArguments[i];
@@ -45,8 +45,6 @@ exports.select = function () {
 
             return obj;
         });
-
-        return acc;
     };
 
     return [3, selected];
@@ -102,11 +100,7 @@ exports.sortBy = function (property, order) {
  */
 exports.format = function (property, formatter) {
     var formated = function (acc) {
-        return acc.map(function (item) {
-            item[property] = formatter(item[property]);
-
-            return item;
-        });
+        return console.info(acc, formatter);
     };
 
     return [5, formated];
