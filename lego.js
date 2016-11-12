@@ -23,7 +23,9 @@ var PRIORITY = {
 
 exports.query = function (collection) {
     var arrayOfArguments = [].slice.call(arguments, 1);
-    var friendsCollection = collection.slice();
+    var friendsCollection = collection.map(function (item) {
+        return Object.assign({}, item);
+    });
 
     function sortArg(a, b) {
         return PRIORITY[a.name] - PRIORITY[b.name];
