@@ -23,9 +23,9 @@ var PRIORITY = {
 
 function cloneCollection(collection) {
     return collection.map(function (item) {
-        // if (Object.assign({})) {
-        //     return Object.assign({}, item);
-        // }
+        if (Object.assign({})) {
+            return Object.assign({}, item);
+        }
 
         var clonObject = {};
         for (var key in item) {
