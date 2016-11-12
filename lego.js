@@ -6,54 +6,56 @@
  */
 exports.isStar = false;
 
+var PRIORITIES = {
+    'limit': 5,
+    'format': 4,
+    'select': 3,
+    'sortBy': 2,
+    'filterIn': 1
+};
+
+function clone(array) {
+    return array.map(function (element) {
+        return Object.assign({}, element);
+    });
+}
+
 /**
  * Запрос к коллекции
  * @param {Array} collection
  * @params {...Function} – Функции для запроса
  * @returns {Array}
  */
-
-var PRIORITY = {
-    filterIn: 1,
-    sortBy: 2,
-    select: 3,
-    format: 4,
-    limit: 5
-};
-
 exports.query = function (collection) {
-    var arrayOfArguments = [].slice.call(arguments, 1);
-    var friendsCollection = collection.slice();
+    var functions = [].slice.call(arguments, 1);
+    var copy = clone(collection);
 
-    function sortArg(a, b) {
-        return PRIORITY[a.name] - PRIORITY[b.name];
-    }
+    functions = functions.sort(function (one, another) {
+        return PRIORITIES[one.name] - PRIORITIES[another.name];
+    });
 
-    return arrayOfArguments.sort(sortArg)
-                            .reduce(function (acc, item) {
-                                return item(acc);
-                            }, friendsCollection);
+    return functions.reduce(function (array, func) {
+        return func(array);
+    }, copy);
 };
 
 /**
  * Выбор полей
  * @params {...String}
- * @return {Function} select - выбирает определенные поля из объектов
+ * @returns {Function}
  */
-
 exports.select = function () {
-    var arrayOfArguments = [].slice.call(arguments);
+    var properties = [].slice.call(arguments);
 
-    return function select(acc) {
-        return acc.map(function (friendItem) {
-            var objectOfFriend = {};
-            for (var property in friendItem) {
-                if (arrayOfArguments.indexOf(property) !== -1) {
-                    objectOfFriend[property] = friendItem[property];
+    return function select(collection) {
+        return collection.map(function (item) {
+            return properties.reduce(function (object, property) {
+                if (item.hasOwnProperty(property)) {
+                    object[property] = item[property];
                 }
-            }
 
-            return objectOfFriend;
+                return object;
+            }, {});
         });
     };
 };
@@ -62,13 +64,12 @@ exports.select = function () {
  * Фильтрация поля по массиву значений
  * @param {String} property – Свойство для фильтрации
  * @param {Array} values – Доступные значения
- * @returns {Function} acc - отфильтрованный массив объектов
+ * @returns {Function}
  */
-
 exports.filterIn = function (property, values) {
-    return function filterIn(acc) {
-        return acc.filter(function (item) {
-            return (values.indexOf(item[property]) !== -1);
+    return function filterIn(collection) {
+        return collection.filter(function (person) {
+            return (values.indexOf(person[property]) !== -1);
         });
     };
 };
@@ -77,19 +78,21 @@ exports.filterIn = function (property, values) {
  * Сортировка коллекции по полю
  * @param {String} property – Свойство для фильтрации
  * @param {String} order – Порядок сортировки (asc - по возрастанию; desc – по убыванию)
- * @return {Function} sortBy – сортирует объекты в массиве
+ * @returns {Function}
  */
-
 exports.sortBy = function (property, order) {
-    return function sortBy(acc) {
-        return acc.sort(function (a, b) {
-            var first = a[property];
-            var second = b[property];
-            if (order === 'asc') {
-                return (first <= second) ? -1 : 1;
+    var key = order === 'asc' ? 1 : -1;
+
+    return function sortBy(collection) {
+        return collection.sort(function (one, another) {
+            if (one[property] < another[property]) {
+                return -1 * key;
+            }
+            if (one[property] > another[property]) {
+                return key;
             }
 
-            return (first <= second) ? 1 : -1;
+            return 0;
         });
     };
 };
@@ -98,15 +101,14 @@ exports.sortBy = function (property, order) {
  * Форматирование поля
  * @param {String} property – Свойство для фильтрации
  * @param {Function} formatter – Функция для форматирования
- * @return {Function} format – форматирует поля объектов
+ * @returns {Function}
  */
-
 exports.format = function (property, formatter) {
-    return function format(acc) {
-        return acc.map(function (item) {
-            item[property] = formatter(item[property]);
+    return function format(collection) {
+        return collection.map(function (person) {
+            person[property] = formatter(person[property]);
 
-            return item;
+            return person;
         });
     };
 };
@@ -114,13 +116,15 @@ exports.format = function (property, formatter) {
 /**
  * Ограничение количества элементов в коллекции
  * @param {Number} count – Максимальное количество элементов
- * @return {Function} limit – обрезает количество объектов массива
+ * @returns {Function}
  */
-
 exports.limit = function (count) {
+    return function limit(collection) {
+        if (count < 0) {
+            throw new RangeError('Count should be positive number');
+        }
 
-    return function limit(acc) {
-        return acc.slice(0, count);
+        return collection.slice(0, count);
     };
 };
 
