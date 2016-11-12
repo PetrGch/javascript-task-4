@@ -47,8 +47,9 @@ exports.select = function () {
     return function select(acc) {
         return acc.map(function (friendItem) {
             var objectOfFriend = {};
-            for (var property in friendItem) {
-                if (arrayOfArguments.indexOf(property) !== -1) {
+            for (var i = 0; i < arrayOfArguments.length; i++) {
+                var property = arrayOfArguments[i];
+                if (friendItem.hasOwnProperty(property)) {
                     objectOfFriend[property] = friendItem[property];
                 }
             }
@@ -89,7 +90,7 @@ exports.sortBy = function (property, order) {
                 return (first <= second) ? -1 : 1;
             }
 
-            return (first <= second) ? 1 : -1;
+            return (first < second) ? 1 : -1;
         });
     };
 };
