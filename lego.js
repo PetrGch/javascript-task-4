@@ -44,11 +44,11 @@ exports.select = function () {
     return function select(acc) {
         return acc.map(function (friendItem) {
             var objectOfFriend = {};
-            arrayOfArguments.forEach(function (propsName) {
-                if (friendItem.hasOwnProperty(propsName)) {
-                    objectOfFriend[propsName] = friendItem[propsName];
+            for (var property in friendItem) {
+                if (arrayOfArguments.indexOf(property) !== -1) {
+                    objectOfFriend[property] = friendItem[property];
                 }
-            });
+            }
 
             return objectOfFriend;
         });
@@ -97,7 +97,9 @@ exports.sortBy = function (property, order) {
 exports.format = function (property, formatter) {
     return function format(acc) {
         return acc.map(function (item) {
-            item[property] = formatter(item[property]);
+            if (item.hasOwnProperty(property)) {
+                item[property] = formatter(item[property]);
+            }
 
             return item;
         });
