@@ -21,11 +21,26 @@ var PRIORITY = {
     limit: 5
 };
 
+function cloneCollection(collection) {
+    return collection.map(function (item) {
+        // if (Object.assign({})) {
+        //     return Object.assign({}, item);
+        // }
+
+        var clonObject = {};
+        for (var key in item) {
+            if (item.hasOwnProperty(key)) {
+                clonObject[key] = item[key];
+            }
+        }
+
+        return clonObject;
+    });
+}
+
 exports.query = function (collection) {
     var arrayOfArguments = [].slice.call(arguments, 1);
-    var friendsCollection = collection.map(function (item) {
-        return Object.assign({}, item);
-    });
+    var friendsCollection = cloneCollection(collection);
 
     function sortArg(a, b) {
         return PRIORITY[a.name] - PRIORITY[b.name];
