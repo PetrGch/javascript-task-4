@@ -13,17 +13,25 @@ exports.isStar = false;
  * @returns {Array}
  */
 
+var PRIORITY = {
+    filterIn: 1,
+    sortBy: 2,
+    select: 3,
+    limit: 4,
+    format: 5
+};
+
 exports.query = function (collection) {
     var arrayOfArguments = [].slice.call(arguments, 1);
     var friendsCollection = collection.slice();
-    function compare(a, b) {
-        return a[0] - b[0];
+    function sortArg(a, b) {
+        return PRIORITY[a.name] - PRIORITY[b.name];
     }
 
-    return arrayOfArguments.sort(compare)
-                    .reduce(function (acc, item) {
-                        return item[1](acc);
-                    }, friendsCollection);
+    return arrayOfArguments.sort(sortArg)
+                            .reduce(function (acc, item) {
+                                return item(acc);
+                            }, friendsCollection);
 };
 
 /*
@@ -32,21 +40,19 @@ exports.query = function (collection) {
  */
 exports.select = function () {
     var arrayOfArguments = [].slice.call(arguments);
-    var selected = function (acc) {
+
+    return function (acc) {
         return acc.map(function (friendItem) {
             var objectOfFriend = {};
             arrayOfArguments.forEach(function (propsName) {
-                var property = friendItem[propsName];
                 if (friendItem.hasOwnProperty(propsName)) {
-                    objectOfFriend[propsName] = property;
+                    objectOfFriend[propsName] = friendItem[propsName];
                 }
             });
 
             return objectOfFriend;
         });
     };
-
-    return [3, selected];
 };
 
 /*
@@ -56,14 +62,12 @@ exports.select = function () {
  */
 exports.filterIn = function (property, values) {
 
-    var filtered = function (acc) {
+    return function (acc) {
         return acc.filter(function (item) {
 
             return values.indexOf(item[property]) !== -1;
         });
     };
-
-    return [1, filtered];
 };
 
 /*
@@ -72,7 +76,7 @@ exports.filterIn = function (property, values) {
  * @param {String} order – Порядок сортировки (asc - по возрастанию; desc – по убыванию)
  */
 exports.sortBy = function (property, order) {
-    var sorted = function (acc) {
+    return function (acc) {
         return acc.sort(function (a, b) {
             var first = a[property];
             var second = b[property];
@@ -83,8 +87,6 @@ exports.sortBy = function (property, order) {
             return (first <= second) ? 1 : -1;
         });
     };
-
-    return [2, sorted];
 };
 
 /*
@@ -93,15 +95,13 @@ exports.sortBy = function (property, order) {
  * @param {Function} formatter – Функция для форматирования
  */
 exports.format = function (property, formatter) {
-    var formated = function (acc) {
+    return function (acc) {
         return acc.map(function (item) {
             item[property] = formatter(item[property]);
 
             return item;
         });
     };
-
-    return [5, formated];
 };
 
 /*
@@ -110,11 +110,9 @@ exports.format = function (property, formatter) {
  */
 exports.limit = function (count) {
 
-    var limited = function (acc) {
+    return function (acc) {
         return acc.slice(0, count);
     };
-
-    return [4, limited];
 };
 
 if (exports.isStar) {
