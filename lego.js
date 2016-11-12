@@ -41,7 +41,7 @@ exports.query = function (collection) {
 exports.select = function () {
     var arrayOfArguments = [].slice.call(arguments);
 
-    return function (acc) {
+    return function select(acc) {
         return acc.map(function (friendItem) {
             var objectOfFriend = {};
             arrayOfArguments.forEach(function (propsName) {
@@ -62,7 +62,7 @@ exports.select = function () {
  */
 exports.filterIn = function (property, values) {
 
-    return function (acc) {
+    return function filterIn(acc) {
         return acc.filter(function (item) {
 
             return values.indexOf(item[property]) !== -1;
@@ -76,7 +76,7 @@ exports.filterIn = function (property, values) {
  * @param {String} order – Порядок сортировки (asc - по возрастанию; desc – по убыванию)
  */
 exports.sortBy = function (property, order) {
-    return function (acc) {
+    return function sortBy(acc) {
         return acc.sort(function (a, b) {
             var first = a[property];
             var second = b[property];
@@ -95,7 +95,7 @@ exports.sortBy = function (property, order) {
  * @param {Function} formatter – Функция для форматирования
  */
 exports.format = function (property, formatter) {
-    return function (acc) {
+    return function format(acc) {
         return acc.map(function (item) {
             item[property] = formatter(item[property]);
 
@@ -110,7 +110,7 @@ exports.format = function (property, formatter) {
  */
 exports.limit = function (count) {
 
-    return function (acc) {
+    return function limit(acc) {
         return acc.slice(0, count);
     };
 };
