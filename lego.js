@@ -63,7 +63,7 @@ exports.filterIn = function (property, values) {
         });
     };
 
-    return [2, filtered];
+    return [1, filtered];
 };
 
 /*
@@ -77,14 +77,14 @@ exports.sortBy = function (property, order) {
             var first = a[property];
             var second = b[property];
             if (order === 'asc') {
-                return (first > second) ? 1 : -1;
+                return (first <= second) ? -1 : 1;
             }
 
-            return (first > second) ? -1 : 1;
+            return (first <= second) ? 1 : -1;
         });
     };
 
-    return [1, sorted];
+    return [2, sorted];
 };
 
 /*
