@@ -6,14 +6,8 @@
  */
 exports.isStar = false;
 
-/**
- * Запрос к коллекции
- * @param {Array} collection
- * @params {...Function} – Функции для запроса
- * @returns {Array}
- */
 
-var PRIORITY = {
+var FUNCTION_PRIORATY = {
     filterIn: 1,
     sortBy: 2,
     select: 3,
@@ -21,13 +15,16 @@ var PRIORITY = {
     limit: 5
 };
 
+/**
+* Запрос к коллекции
+* @param {Array} collection – Массив объектов (список друзей)
+* @returns {Array} clonObject – Склонированный массив объектов (список друзей)
+*/
+
 function cloneCollection(collection) {
     return collection.map(function (item) {
-        if (Object.assign({})) {
-            return Object.assign({}, item);
-        }
-
         var clonObject = {};
+
         for (var key in item) {
             if (item.hasOwnProperty(key)) {
                 clonObject[key] = item[key];
@@ -38,17 +35,23 @@ function cloneCollection(collection) {
     });
 }
 
+/**
+* Запрос к коллекции
+* @param {Array} collection – Массив объектов (список друзей)
+* @params {...Function} – Функции для запроса
+* @returns {Array} – Обработанный массив объектов (список друзей)
+*/
 exports.query = function (collection) {
     var arrayOfArguments = [].slice.call(arguments, 1);
     var friendsCollection = cloneCollection(collection);
 
     function sortArg(a, b) {
-        return PRIORITY[a.name] - PRIORITY[b.name];
+        return FUNCTION_PRIORATY[a.name] - FUNCTION_PRIORATY[b.name];
     }
 
     return arrayOfArguments.sort(sortArg)
-                            .reduce(function (acc, item) {
-                                return item(acc);
+                            .reduce(function (accFriends, item) {
+                                return item(accFriends);
                             }, friendsCollection);
 };
 
@@ -61,8 +64,8 @@ exports.query = function (collection) {
 exports.select = function () {
     var arrayOfArguments = [].slice.call(arguments);
 
-    return function select(acc) {
-        return acc.map(function (friendItem) {
+    return function select(accFriends) {
+        return accFriends.map(function (friendItem) {
             var objectOfFriend = {};
             for (var i = 0; i < arrayOfArguments.length; i++) {
                 var property = arrayOfArguments[i];
@@ -84,8 +87,8 @@ exports.select = function () {
  */
 
 exports.filterIn = function (property, values) {
-    return function filterIn(acc) {
-        return acc.filter(function (item) {
+    return function filterIn(accFriends) {
+        return accFriends.filter(function (item) {
             return (values.indexOf(item[property]) !== -1);
         });
     };
@@ -99,8 +102,8 @@ exports.filterIn = function (property, values) {
  */
 
 exports.sortBy = function (property, order) {
-    return function sortBy(acc) {
-        return acc.sort(function (a, b) {
+    return function sortBy(accFriends) {
+        return accFriends.sort(function (a, b) {
             var first = a[property];
             var second = b[property];
             if (order === 'asc') {
@@ -120,8 +123,8 @@ exports.sortBy = function (property, order) {
  */
 
 exports.format = function (property, formatter) {
-    return function format(acc) {
-        return acc.map(function (item) {
+    return function format(accFriends) {
+        return accFriends.map(function (item) {
             item[property] = formatter(item[property]);
 
             return item;
@@ -137,8 +140,8 @@ exports.format = function (property, formatter) {
 
 exports.limit = function (count) {
 
-    return function limit(acc) {
-        return acc.slice(0, count);
+    return function limit(accFriends) {
+        return accFriends.slice(0, count);
     };
 };
 
